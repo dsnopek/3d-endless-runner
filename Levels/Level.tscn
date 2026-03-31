@@ -1,6 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://c8yo5q5ynfhob"]
+[gd_scene format=3 uid="uid://c8yo5q5ynfhob"]
 
-[ext_resource type="Script" path="res://Levels/Level.gd" id="1_ep8fx"]
+[ext_resource type="Script" uid="uid://bkap0ebvhivfu" path="res://Levels/Level.gd" id="1_ep8fx"]
 [ext_resource type="PackedScene" uid="uid://3u7ouk31ik8e" path="res://Coins/Coin.tscn" id="2_oxkiu"]
 [ext_resource type="PackedScene" uid="uid://c2a5i2mnt6gur" path="res://Player/Player.tscn" id="2_tx86h"]
 [ext_resource type="PackedScene" uid="uid://bogqfm6wc3xl3" path="res://Levels/Rock/Rock.tscn" id="3_qn8a7"]
@@ -25,7 +25,7 @@ albedo_color = Color(0.65098, 0.580392, 0.517647, 1)
 material = SubResource("StandardMaterial3D_nxfd6")
 size = Vector2(128, 128)
 
-[node name="Level" type="Node3D" node_paths=PackedStringArray("player", "spawn_timer", "spawn_obstacle_timer")]
+[node name="Level" type="Node3D" unique_id=404567282 node_paths=PackedStringArray("player", "spawn_timer", "spawn_obstacle_timer")]
 script = ExtResource("1_ep8fx")
 player = NodePath("Player")
 spawn_timer = NodePath("spawn_timer")
@@ -34,37 +34,37 @@ coin = ExtResource("2_oxkiu")
 rock = ExtResource("3_qn8a7")
 road = ExtResource("7_pxm3r")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=914717248]
 environment = SubResource("Environment_asq4s")
 
-[node name="Player" parent="." instance=ExtResource("2_tx86h")]
+[node name="Player" parent="." unique_id=260110147 instance=ExtResource("2_tx86h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00749791, -0.0948796, 0.064116)
 
-[node name="spawn_timer" type="Timer" parent="."]
+[node name="spawn_timer" type="Timer" parent="." unique_id=1996124193]
 wait_time = 5.0
 autostart = true
 
-[node name="spawn_obstacle_timer" type="Timer" parent="."]
+[node name="spawn_obstacle_timer" type="Timer" parent="." unique_id=824456747]
 wait_time = 3.0
 autostart = true
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1905764330]
 transform = Transform3D(1, 0, 0, 0, -0.525902, 0.850545, 0, -0.850545, -0.525902, 0, 0, 0)
 shadow_enabled = true
 directional_shadow_mode = 1
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=996123262]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225245, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1566659667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0202086, 0)
 shape = SubResource("ConcavePolygonShape3D_oisvu")
 
-[node name="Plain" type="MeshInstance3D" parent="."]
+[node name="Plain" type="MeshInstance3D" parent="." unique_id=2110923885]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.213, 0)
 mesh = SubResource("PlaneMesh_gu75d")
 
-[node name="RoadSpawnTimer" type="Timer" parent="."]
+[node name="RoadSpawnTimer" type="Timer" parent="." unique_id=1541413267]
 wait_time = 0.001
 autostart = true
 
