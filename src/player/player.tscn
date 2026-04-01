@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://c2a5i2mnt6gur"]
+
+[ext_resource type="Script" uid="uid://wue8bx815ebq" path="res://src/player/player.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dgkfdqui7nsoo" path="res://assets/stylized_lowpoly_char/stylized_low_poly_animated_character.glb" id="2_ngmab"]
+[ext_resource type="AudioStream" uid="uid://brlwwb6hww3tg" path="res://assets/sounds/coinpickup.wav" id="3_mf2ua"]
+
+[sub_resource type="CapsuleShape3D" id="1"]
+
+[node name="Player" type="CharacterBody3D" unique_id=610491167 groups=["players"]]
+script = ExtResource("2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1497719654]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("1")
+
+[node name="Model" parent="." unique_id=1110347834 instance=ExtResource("2_ngmab")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.895648, 0)
+
+[node name="CollisionArea" type="Area3D" parent="." unique_id=337441725]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CollisionArea" unique_id=1579192856]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1, 0)
+shape = SubResource("1")
+
+[node name="CoinSound" type="AudioStreamPlayer" parent="." unique_id=2061795862]
+stream = ExtResource("3_mf2ua")
+
+[connection signal="area_entered" from="CollisionArea" to="." method="_on_collision_area_entered"]

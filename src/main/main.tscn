@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://bw8yhud8b2fui"]
+
+[ext_resource type="PackedScene" uid="uid://c8yo5q5ynfhob" path="res://src/levels/level.tscn" id="1_3eh75"]
+[ext_resource type="Script" uid="uid://c86184u1p106v" path="res://src/main/main.gd" id="1_ab7mr"]
+[ext_resource type="PackedScene" uid="uid://c2a5i2mnt6gur" path="res://src/player/player.tscn" id="3_jkpqq"]
+[ext_resource type="PackedScene" uid="uid://yc5a1y6o8w4v" path="res://src/main/ui.tscn" id="5_jkpqq"]
+
+[node name="Main" type="Node3D" unique_id=1559350767 node_paths=PackedStringArray("level", "player", "ui")]
+script = ExtResource("1_ab7mr")
+level = NodePath("Level")
+player = NodePath("Player")
+ui = NodePath("CanvasLayer/UI")
+
+[node name="Level" parent="." unique_id=404567282 instance=ExtResource("1_3eh75")]
+
+[node name="Player" parent="." unique_id=610491167 instance=ExtResource("3_jkpqq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00749791, -0.0948796, 0.064116)
+
+[node name="Camera3D" type="Camera3D" parent="Player" unique_id=90848858]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 2.899, 2.391)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1821369370]
+
+[node name="UI" parent="CanvasLayer" unique_id=1978803305 instance=ExtResource("5_jkpqq")]
+unique_name_in_owner = true
+
+[connection signal="coin_collected" from="Player" to="." method="_on_player_coin_collected"]
+[connection signal="player_died" from="Player" to="." method="_on_player_player_died"]
+[connection signal="pause_pressed" from="CanvasLayer/UI" to="." method="_on_ui_pause_pressed"]
+[connection signal="play_pressed" from="CanvasLayer/UI" to="." method="_on_ui_play_pressed"]
+[connection signal="quit_pressed" from="CanvasLayer/UI" to="." method="_on_ui_quit_pressed"]
+[connection signal="resume_pressed" from="CanvasLayer/UI" to="." method="_on_ui_resume_pressed"]
+[connection signal="retry_pressed" from="CanvasLayer/UI" to="." method="_on_ui_retry_pressed"]
+[connection signal="return_to_menu_pressed" from="CanvasLayer/UI" to="." method="_on_ui_return_to_menu_pressed"]

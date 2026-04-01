@@ -1,0 +1,93 @@
+extends Control
+
+@onready var hud: Control = $HUD
+@onready var screen_container: SGUIScreenContainer = %ScreenContainer
+@onready var coin_label: Label = %CoinLabel
+@onready var main_menu: Control = %MainMenu
+@onready var credits: Control = %Credits
+@onready var quit_button: Button = %QuitButton
+
+
+signal play_pressed()
+signal quit_pressed()
+signal pause_pressed()
+signal resume_pressed()
+signal return_to_menu_pressed()
+signal retry_pressed()
+
+
+func _ready() -> void:
+	if OS.has_feature("mobile") or OS.has_feature("web"):
+		quit_button.hide()
+	reset_ui()
+
+
+func _input(p_event: InputEvent) -> void:
+	if p_event.is_action_pressed("pause"):
+		pause_pressed.emit()
+
+
+func set_hud_visibility(p_visible: bool) -> void:
+	hud.visible = p_visible
+
+
+func show_menu(p_menu_name: String) -> void:
+	screen_container.visible = true
+	screen_container.show_screen(p_menu_name)
+
+	# Set focus to the first button in the menu.
+	var screen: Control = screen_container.get_current_screen_control()
+	if screen:
+		var buttons = screen.find_children("*", "Button")
+		if buttons.size() > 0:
+			buttons[0].grab_focus()
+
+
+func hide_menu() -> void:
+	screen_container.visible = false
+
+
+func set_coin_count(p_count: int) -> void:
+	coin_label.text = "Coins: " + str(p_count)
+
+
+func reset_ui() -> void:
+	set_coin_count(0)
+	set_hud_visibility(false)
+	show_menu("MainMenu")
+
+
+func _on_rich_text_label_meta_clicked(p_meta: Variant) -> void:
+	OS.shell_open(p_meta)
+
+
+func _on_play_button_pressed() -> void:
+	play_pressed.emit()
+
+
+func _on_credits_button_pressed() -> void:
+	show_menu("Credits")
+
+
+func _on_quit_button_pressed() -> void:
+	quit_pressed.emit()
+
+
+func _on_back_from_credits_button_pressed() -> void:
+	show_menu("MainMenu")
+
+
+func _on_pause_button_pressed() -> void:
+	pause_pressed.emit()
+
+
+func _on_resume_button_pressed() -> void:
+	resume_pressed.emit()
+
+
+func _on_return_to_menu_button_pressed() -> void:
+	return_to_menu_pressed.emit()
+
+
+func _on_retry_button_pressed() -> void:
+	retry_pressed.emit()

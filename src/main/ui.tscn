@@ -1,0 +1,208 @@
+[gd_scene format=3 uid="uid://yc5a1y6o8w4v"]
+
+[ext_resource type="Theme" uid="uid://dlowacntnn51c" path="res://src/main/theme.tres" id="1_88570"]
+[ext_resource type="Script" uid="uid://bi7vqvb8o17bw" path="res://src/main/ui.gd" id="1_hcoyx"]
+[ext_resource type="Script" uid="uid://depspj0qam4gi" path="res://addons/sgui/controls/screen_container.gd" id="2_lxr3f"]
+
+[node name="UI" type="Control" unique_id=1978803305]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("1_88570")
+script = ExtResource("1_hcoyx")
+
+[node name="HUD" type="Control" parent="." unique_id=1335236199]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CoinLabel" type="Label" parent="HUD" unique_id=1183036340]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 61.0
+offset_bottom = 23.0
+text = "Coins: 0"
+
+[node name="PauseButton" type="Button" parent="HUD" unique_id=394998289]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -8.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = 8.0
+grow_horizontal = 0
+text = "Pause"
+
+[node name="ScreenContainer" type="Container" parent="." unique_id=1384761099]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_lxr3f")
+current_screen = "MainMenu"
+metadata/_custom_type_script = "uid://depspj0qam4gi"
+
+[node name="MainMenu" type="PanelContainer" parent="ScreenContainer" unique_id=1355219202]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="ScreenContainer/MainMenu" unique_id=1505539564]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer/MainMenu/MarginContainer" unique_id=288226928]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="PlayButton" type="Button" parent="ScreenContainer/MainMenu/MarginContainer/VBoxContainer" unique_id=143835595]
+layout_mode = 2
+text = "Play"
+
+[node name="CreditsButton" type="Button" parent="ScreenContainer/MainMenu/MarginContainer/VBoxContainer" unique_id=1254639197]
+layout_mode = 2
+text = "Credits"
+
+[node name="QuitButton" type="Button" parent="ScreenContainer/MainMenu/MarginContainer/VBoxContainer" unique_id=995746134]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Quit"
+
+[node name="Credits" type="PanelContainer" parent="ScreenContainer" unique_id=2020321776]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="ScreenContainer/Credits" unique_id=1724177007]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer/Credits/MarginContainer" unique_id=1707974694]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ScreenContainer/Credits/MarginContainer/VBoxContainer" unique_id=434827052]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Game: (MIT License)[/b]
+
+[ul]
+[url=https://github.com/hman278/Godot-Runner-Game]Godot-Runner-Game[/url] originally by hman278 for Godot 3
+[url=https://github.com/mujtaba-io/3d-endless-runner]Ported to Godot 4[/url] mujtaba-io
+[url=https://github.com/dsnopek/3d-endless-runner]Minor improvements[/url] by David Snopek
+[/ul]
+
+[b]Assets:[/b]
+
+[ul]
+[url=https://skfb.ly/6RLBv]Coin[/url] by Folly (CC-BY 4.0)
+[url=https://skfb.ly/oGVNW]Snowy Road Diorama[/url] by cha (CC-BY 4.0)
+[url=https://skfb.ly/orADo]Slylized Character[/url] by Karthik Naidu (CC-BY 4.0)
+[url=https://skfb.ly/owPIz]Stylized Rock[/url] by Alex_Pepper (CC-BY 4.0)
+[/ul]
+"
+
+[node name="BackFromCreditsButton" type="Button" parent="ScreenContainer/Credits/MarginContainer/VBoxContainer" unique_id=693243828]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Return to Menu"
+
+[node name="PauseMenu" type="PanelContainer" parent="ScreenContainer" unique_id=1292781579]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="ScreenContainer/PauseMenu" unique_id=779158867]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer/PauseMenu/MarginContainer" unique_id=1610755651]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ResumeButton" type="Button" parent="ScreenContainer/PauseMenu/MarginContainer/VBoxContainer" unique_id=937336465]
+layout_mode = 2
+text = "Resume"
+
+[node name="ReturnToMenuButton" type="Button" parent="ScreenContainer/PauseMenu/MarginContainer/VBoxContainer" unique_id=2145788018]
+layout_mode = 2
+text = "Quit to Main Menu"
+
+[node name="GameOverMenu" type="PanelContainer" parent="ScreenContainer" unique_id=1437944284]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="ScreenContainer/GameOverMenu" unique_id=720310898]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer/GameOverMenu/MarginContainer" unique_id=371346361]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="ScreenContainer/GameOverMenu/MarginContainer/VBoxContainer" unique_id=1257789629]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+text = "Game Over!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RetryButton" type="Button" parent="ScreenContainer/GameOverMenu/MarginContainer/VBoxContainer" unique_id=1309588962]
+layout_mode = 2
+text = "Try Again!"
+
+[node name="ReturnToMenuButton" type="Button" parent="ScreenContainer/GameOverMenu/MarginContainer/VBoxContainer" unique_id=989474915]
+layout_mode = 2
+text = "Quit to Main Menu"
+
+[connection signal="pressed" from="HUD/PauseButton" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="ScreenContainer/MainMenu/MarginContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="ScreenContainer/MainMenu/MarginContainer/VBoxContainer/CreditsButton" to="." method="_on_credits_button_pressed"]
+[connection signal="pressed" from="ScreenContainer/MainMenu/MarginContainer/VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="meta_clicked" from="ScreenContainer/Credits/MarginContainer/VBoxContainer/RichTextLabel" to="." method="_on_rich_text_label_meta_clicked"]
+[connection signal="pressed" from="ScreenContainer/Credits/MarginContainer/VBoxContainer/BackFromCreditsButton" to="." method="_on_back_from_credits_button_pressed"]
+[connection signal="pressed" from="ScreenContainer/PauseMenu/MarginContainer/VBoxContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="ScreenContainer/PauseMenu/MarginContainer/VBoxContainer/ReturnToMenuButton" to="." method="_on_return_to_menu_button_pressed"]
+[connection signal="pressed" from="ScreenContainer/GameOverMenu/MarginContainer/VBoxContainer/RetryButton" to="." method="_on_retry_button_pressed"]
+[connection signal="pressed" from="ScreenContainer/GameOverMenu/MarginContainer/VBoxContainer/ReturnToMenuButton" to="." method="_on_return_to_menu_button_pressed"]
