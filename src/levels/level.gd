@@ -6,7 +6,7 @@ extends Node3D
 @export var road_length: float = 27.75
 @export var initial_road_count: int = 4
 
-const START_Z: float = -50.0
+const START_Z: float = -65.0
 const ROAD_SPAWN_X: Array = [-2, 0, 2]
 
 @onready var spawned_parent: Node3D = $Spawned
@@ -14,7 +14,10 @@ const ROAD_SPAWN_X: Array = [-2, 0, 2]
 @onready var spawn_coin_timer: Timer = $SpawnCoinTimer
 @onready var spawn_obstacle_timer: Timer = $SpawnObstacleTimer
 
+signal object_spawned(obj: Node3D)
+
 var _last_road: Node3D = null
+
 
 func _ready() -> void:
 	reset_level()
@@ -48,13 +51,14 @@ func stop_level() -> void:
 func _spawn_road(p_z: float) -> Node3D:
 	var road_asset = road_scene.instantiate()
 	spawned_parent.add_child(road_asset)
-	road_asset.global_transform.origin = Vector3(0, 0, p_z)
+	road_asset.position = Vector3(0, 0, p_z)
+	object_spawned.emit(road_asset)
 	return road_asset
 
 
 func _on_spawn_road_timer_timeout() -> void:
 	if _last_road:
-		var z: float = _last_road.global_transform.origin.z - road_length
+		var z: float = _last_road.position.z - road_length
 		_last_road = _spawn_road(z)
 
 
@@ -73,11 +77,12 @@ func _on_spawn_coin_timer_timeout() -> void:
 		var coin_inst: Area3D = coin_scene.instantiate()
 		spawned_parent.add_child(coin_inst)
 
-		coin_inst.global_transform.origin = Vector3(
+		coin_inst.position = Vector3(
 			ROAD_SPAWN_X[random_line_num],
 			1.0,
 			START_Z + i * 2.5 # set distance between coins
 		)
+		object_spawned.emit(coin_inst)
 
 
 func _on_spawn_obstacle_timer_timeout() -> void:
@@ -94,6 +99,6 @@ func _on_spawn_obstacle_timer_timeout() -> void:
 
 		var rock_inst = rock_scene.instantiate()
 		spawned_parent.add_child(rock_inst)
-
-		rock_inst.global_transform.origin = Vector3(ROAD_SPAWN_X[random_line_num], 0.0, START_Z)
+		rock_inst.position = Vector3(ROAD_SPAWN_X[random_line_num], 0.0, START_Z)
 		rock_inst.rotation_degrees.y = randf_range(0, 360)
+		object_spawned.emit(rock_inst)

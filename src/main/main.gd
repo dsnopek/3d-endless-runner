@@ -21,6 +21,8 @@ func _ready() -> void:
 		push_error("UI node not assigned in Main scene.")
 		return
 
+	GameState.current_level = level
+
 	player.coin_collected.connect(_on_player_coin_collected)
 	player.player_died.connect(_on_player_player_died)
 

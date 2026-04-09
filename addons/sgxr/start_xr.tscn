@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3 uid="uid://br72i82f12kke"]
+
+[ext_resource type="Script" uid="uid://bqwupbkvcw5t" path="res://addons/sgxr/start_xr.gd" id="1_6skp0"]
+
+[node name="StartXR" type="Node3D"]
+script = ExtResource("1_6skp0")
+
+[node name="WebXRLayer" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+visible = false
+
+[node name="PanelContainer" type="PanelContainer" parent="WebXRLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.5
+offset_top = -44.5
+offset_right = 85.5
+offset_bottom = 44.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="WebXRLayer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="EnterVRButton" type="Button" parent="WebXRLayer/PanelContainer/MarginContainer"]
+layout_mode = 2
+text = "Enter VR"
+
+[connection signal="pressed" from="WebXRLayer/PanelContainer/MarginContainer/EnterVRButton" to="." method="_on_enter_vr_button_pressed"]

@@ -6,7 +6,7 @@ extends CharacterBody3D
 const MOVE_SPEED: float = 8.0
 const JUMP_VELOCITY: float = 8.0
 const GRAVITY: float = 24.0
-const LANES: Array = [-2, 0, 2]
+const LANES: Array = [-2.0, 0.0, 2.0]
 
 const MIN_SWIPE_DISTANCE: float = 100.0
 const MAX_SWIPE_TIME: float = 0.4
@@ -40,19 +40,20 @@ func _physics_process(p_delta: float) -> void:
 		target_lane += 1
 
 	# Move towards the target lane
-	var target_x: float = LANES[target_lane]
-	var current_x: float = global_transform.origin.x
-	global_transform.origin.x = lerp(current_x, target_x, MOVE_SPEED * p_delta)
+	position.x = lerpf(position.x, LANES[target_lane], MOVE_SPEED * p_delta)
+
+	# Apply the parent's scale to velocity.
+	var velocity_scale: float = get_parent().scale.x if get_parent() else 1.0
 
 	# Apply gravity
 	if not is_on_floor():
-		velocity.y -= GRAVITY * p_delta
+		velocity.y -= GRAVITY * velocity_scale * p_delta
 	else:
 		velocity.y = 0  # Reset vertical velocity when on the floor
 
 	# Jumping logic
 	if is_on_floor() and Input.is_action_pressed("jump"):
-		velocity.y = JUMP_VELOCITY  # Apply jump velocity
+		velocity.y = JUMP_VELOCITY * velocity_scale  # Apply jump velocity
 
 	# Apply the velocity and move the character
 	move_and_slide()
@@ -119,4 +120,4 @@ func reset_player() -> void:
 	is_jumping = false
 	current_lane = 1
 	target_lane = 1
-	global_transform.origin = starting_point
+	position = starting_point

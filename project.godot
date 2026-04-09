@@ -14,10 +14,13 @@ config/name="3D Endless Runner"
 run/main_scene="uid://bw8yhud8b2fui"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.png"
+run/main_scene.xr="uid://c2s2q001dyx3t"
 
 [autoload]
 
 GameState="*uid://rtf0jxr6lej6"
+XRToolsUserSettings="*uid://bqgb8i74tm0t"
+XRToolsRumbleManager="*uid://by853dk86g1qw"
 
 [display]
 
@@ -92,9 +95,17 @@ pause={
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.301961, 0.301961, 0.301961, 1)
 quality/driver/driver_name="GLES2"
 vram_compression/import_etc=true
 quality/filters/use_nearest_mipmap_filter=true
 quality/filters/msaa=1
+
+[xr]
+
+openxr/enabled=true
+openxr/reference_space=2
+openxr/foveation_level=3
+shaders/enabled=true

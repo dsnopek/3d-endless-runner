@@ -5,6 +5,7 @@ extends Control
 @onready var coin_label: Label = %CoinLabel
 @onready var main_menu: Control = %MainMenu
 @onready var credits: Control = %Credits
+@onready var settings_button: Button = %SettingsButton
 @onready var quit_button: Button = %QuitButton
 
 
@@ -15,10 +16,14 @@ signal resume_pressed()
 signal return_to_menu_pressed()
 signal retry_pressed()
 
+signal xr_mode_changed(p_index: int)
+
 
 func _ready() -> void:
 	if OS.has_feature("mobile") or OS.has_feature("web"):
 		quit_button.hide()
+	if not OS.has_feature("androidxr"):
+		settings_button.hide()
 	reset_ui()
 
 
@@ -65,12 +70,20 @@ func _on_play_button_pressed() -> void:
 	play_pressed.emit()
 
 
+func _on_settings_button_pressed() -> void:
+	show_menu("SettingsMenu")
+
+
 func _on_credits_button_pressed() -> void:
 	show_menu("Credits")
 
 
 func _on_quit_button_pressed() -> void:
 	quit_pressed.emit()
+
+
+func _on_back_from_settings_button_pressed() -> void:
+	show_menu("MainMenu")
 
 
 func _on_back_from_credits_button_pressed() -> void:
@@ -91,3 +104,8 @@ func _on_return_to_menu_button_pressed() -> void:
 
 func _on_retry_button_pressed() -> void:
 	retry_pressed.emit()
+
+
+func _on_xr_mode_field_item_selected(p_index: int) -> void:
+	xr_mode_changed.emit(p_index)
+
