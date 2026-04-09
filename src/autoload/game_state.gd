@@ -1,5 +1,6 @@
 extends Node
 
+var current_level: Node3D = null
 var running := false
 
 
