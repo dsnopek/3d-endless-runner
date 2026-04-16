@@ -46,6 +46,7 @@ player = NodePath("GameParent/Player")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.71387565, 3.9969068)
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1735698953]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4457209, 0)
 
 [node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=1817380320]
@@ -102,14 +103,22 @@ mesh = SubResource("BoxMesh_q8ysa")
 
 [node name="Player" parent="GameParent" unique_id=610491167 instance=ExtResource("2_f4vlo")]
 
+[node name="SpatialContainerUIMarker" type="Marker3D" parent="GameParent" unique_id=1221189676]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4587803, -5.3720903)
+
 [node name="VROriginMarker" type="Marker3D" parent="." unique_id=1717720349]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.71387565, 3.9969068)
 
 [node name="PortalOriginMarker" type="Marker3D" parent="." unique_id=1267507980]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.99691)
 
 [node name="VolumeOriginMarker" type="Marker3D" parent="." unique_id=758575299]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
 
 [node name="VolumeGameMarker" type="Marker3D" parent="." unique_id=55051624]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0176864, 0)
