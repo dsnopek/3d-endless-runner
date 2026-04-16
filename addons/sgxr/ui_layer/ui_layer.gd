@@ -176,7 +176,8 @@ func intersects_ray(p_origin: Vector3, p_direction: Vector3) -> Vector2:
 		return _openxr_layer.intersects_ray(p_origin, p_direction)
 
 	var quad_transform: Transform3D = get_global_transform()
-	var quad_normal: Vector3 = quad_transform.basis.z
+	var quad_basis: Basis = quad_transform.basis.orthonormalized()
+	var quad_normal: Vector3 = quad_basis.z
 
 	var denom: float = quad_normal.dot(p_direction)
 	if denom < -0.0001:
@@ -189,16 +190,18 @@ func intersects_ray(p_origin: Vector3, p_direction: Vector3) -> Vector2:
 
 		var relative_point: Vector3 = intersection - quad_transform.origin
 		var projected_point := Vector2(
-			relative_point.dot(quad_transform.basis.x),
-			relative_point.dot(quad_transform.basis.y))
+			relative_point.dot(quad_basis.x),
+			relative_point.dot(quad_basis.y))
 
-		if absf(projected_point.x) > quad_size.x / 2.0:
+		var scaled_quad_size: Vector2 = quad_size * quad_transform.basis.get_scale().x
+
+		if absf(projected_point.x) > scaled_quad_size.x / 2.0:
 			return NO_INTERSECTION
-		if absf(projected_point.y) > quad_size.y / 2.0:
+		if absf(projected_point.y) > scaled_quad_size.y / 2.0:
 			return NO_INTERSECTION
 
-		var u: float = 0.5 + (projected_point.x / quad_size.x)
-		var v: float = 1.0 - (0.5 + (projected_point.y / quad_size.y))
+		var u: float = 0.5 + (projected_point.x / scaled_quad_size.x)
+		var v: float = 1.0 - (0.5 + (projected_point.y / scaled_quad_size.y))
 
 		return Vector2(u, v)
 

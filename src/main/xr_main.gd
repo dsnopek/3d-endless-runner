@@ -3,11 +3,15 @@ extends "res://src/main/main.gd"
 const Stencilizer = preload("res://src/xrconv/stencilizer.gd")
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
+@onready var camera: XRCamera3D = %XRCamera3D
+@onready var ui_layer: Node3D = %UILayer
 @onready var flat_portal: MeshInstance3D = $FlatPortal
 @onready var cube_portal: MeshInstance3D = $CubePortal
 @onready var cube_depth: MeshInstance3D = $CubeDepth
 @onready var game_parent: Node3D = $GameParent
 @onready var world_environment: WorldEnvironment = $GameParent/Level/WorldEnvironment
+
+const UI_LAYER_MIN_SCALE := 0.25
 
 enum XRMode {
 	IMMERSIVE,
@@ -44,6 +48,14 @@ func _on_ui_xr_mode_changed(p_index: int) -> void:
 	set_xr_mode(p_index)
 
 
+func _process(_delta: float) -> void:
+	if xr_mode == XRMode.SPATIAL_CONTAINER:
+		ui_layer.global_transform = %SpatialContainerUIMarker.global_transform
+		if ui_layer.scale.x < UI_LAYER_MIN_SCALE:
+			ui_layer.scale = Vector3.ONE * UI_LAYER_MIN_SCALE
+		ui_layer.look_at(camera.global_transform.origin, Vector3.UP, true)
+
+
 func set_xr_mode(p_index: XRMode) -> void:
 	xr_mode = p_index
 
@@ -60,7 +72,7 @@ func set_xr_mode(p_index: XRMode) -> void:
 		get_viewport().transparent_bg = false
 		stencilizer.restore_object_materials(player)
 		stencilizer.restore_object_materials(level)
-		xr_origin.position = $VROriginMarker.position
+		xr_origin.position = %VROriginMarker.position
 		game_parent.position = Vector3.ZERO
 		game_parent.scale = Vector3.ONE
 		faux_sky_box.visible = true
@@ -78,7 +90,7 @@ func set_xr_mode(p_index: XRMode) -> void:
 		stencilizer.setup_object_materials(level)
 
 		if xr_mode == 1:
-			xr_origin.position = $PortalOriginMarker.position
+			xr_origin.position = %PortalOriginMarker.position
 			game_parent.position = Vector3.ZERO
 			game_parent.scale = Vector3.ONE
 			faux_sky_box.visible = true
@@ -87,8 +99,8 @@ func set_xr_mode(p_index: XRMode) -> void:
 			cube_portal.visible = false
 			cube_depth.visible = false
 		elif xr_mode == 2:
-			xr_origin.position = $VolumeOriginMarker.position
-			game_parent.position = $VolumeGameMarker.position
+			xr_origin.position = %VolumeOriginMarker.position
+			game_parent.position = %VolumeGameMarker.position
 			game_parent.scale = Vector3(0.1, 0.1, 0.1)
 			faux_sky_box.visible = false
 			plain.visible = false

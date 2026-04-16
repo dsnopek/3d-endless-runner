@@ -43,6 +43,7 @@ ui = NodePath("XROrigin3D/UILayer/SubViewport/UI")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.71387565, 3.9969068)
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1735698953]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4457209, 0)
 
 [node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=1817380320]
@@ -56,6 +57,7 @@ tracker = &"right_hand"
 [node name="FunctionPointer" parent="XROrigin3D/RightController" unique_id=1621507524 instance=ExtResource("2_fj4q1")]
 
 [node name="UILayer" parent="XROrigin3D" unique_id=731748485 node_paths=PackedStringArray("layer_viewport") instance=ExtResource("4_htayq")]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6147649, -2.6866283)
 quad_size = Vector2(2, 2)
 layer_viewport = NodePath("SubViewport")
@@ -96,16 +98,24 @@ surface_material_override/0 = SubResource("ShaderMaterial_kx56g")
 
 [node name="Player" parent="GameParent" unique_id=610491167 instance=ExtResource("2_f4vlo")]
 
+[node name="SpatialContainerUIMarker" type="Marker3D" parent="GameParent" unique_id=1221189676]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4587803, -5.3720903)
+
 [node name="VROriginMarker" type="Marker3D" parent="." unique_id=1717720349]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.71387565, 3.9969068)
 
 [node name="PortalOriginMarker" type="Marker3D" parent="." unique_id=1267507980]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.99691)
 
 [node name="VolumeOriginMarker" type="Marker3D" parent="." unique_id=758575299]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
 
 [node name="VolumeGameMarker" type="Marker3D" parent="." unique_id=55051624]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0176864, 0)
 
 [connection signal="xr_mode_changed" from="XROrigin3D/UILayer/SubViewport/UI" to="." method="_on_ui_xr_mode_changed"]
