@@ -24,6 +24,10 @@ func _ready() -> void:
 		quit_button.hide()
 	if not OS.has_feature("androidxr"):
 		settings_button.hide()
+	else:
+		var spatial_container_ext = Engine.get_singleton("OpenXRSpatialContainerExtension")
+		if spatial_container_ext and spatial_container_ext.is_enabled():
+			settings_button.hide()
 	reset_ui()
 
 
@@ -108,4 +112,3 @@ func _on_retry_button_pressed() -> void:
 
 func _on_xr_mode_field_item_selected(p_index: int) -> void:
 	xr_mode_changed.emit(p_index)
-

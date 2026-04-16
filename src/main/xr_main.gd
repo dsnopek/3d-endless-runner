@@ -9,20 +9,34 @@ const Stencilizer = preload("res://src/xrconv/stencilizer.gd")
 @onready var game_parent: Node3D = $GameParent
 @onready var world_environment: WorldEnvironment = $GameParent/Level/WorldEnvironment
 
+enum XRMode {
+	IMMERSIVE,
+	PORTAL,
+	VOLUME,
+	SPATIAL_CONTAINER,
+}
+
 var stencilizer: Stencilizer = Stencilizer.new(1)
-var xr_mode: int = 0
+var xr_mode: XRMode = XRMode.IMMERSIVE
 
 func _ready() -> void:
 	super._ready()
 
-	stencilizer.setup_portal_material(flat_portal)
-	stencilizer.setup_portal_material(cube_portal)
+	var spatial_container_ext = Engine.get_singleton("OpenXRSpatialContainerExtension")
+	if spatial_container_ext and spatial_container_ext.is_enabled():
+		set_xr_mode(XRMode.SPATIAL_CONTAINER)
+		spatial_container_ext.spatial_container_bounds_changed.connect(_on_spatial_container_bounds_changed)
+		spatial_container_ext.spatial_container_interactability_changed.connect(_on_spatial_container_interactability_changed)
+
+	if xr_mode != XRMode.SPATIAL_CONTAINER:
+		stencilizer.setup_portal_material(flat_portal)
+		stencilizer.setup_portal_material(cube_portal)
 
 	level.object_spawned.connect(_on_level_object_spawned)
 
 
 func _on_level_object_spawned(obj: Node3D) -> void:
-	if xr_mode >= 1:
+	if xr_mode in [XRMode.PORTAL, XRMode.VOLUME]:
 		stencilizer.setup_object_materials(obj)
 
 
@@ -30,7 +44,7 @@ func _on_ui_xr_mode_changed(p_index: int) -> void:
 	set_xr_mode(p_index)
 
 
-func set_xr_mode(p_index: int) -> void:
+func set_xr_mode(p_index: XRMode) -> void:
 	xr_mode = p_index
 
 	var openxr_interface: OpenXRInterface = XRServer.find_interface("OpenXR")
@@ -40,7 +54,7 @@ func set_xr_mode(p_index: int) -> void:
 	var faux_sky_box: MeshInstance3D = level.get_node("FauxSkyBox") as MeshInstance3D
 	var plain: MeshInstance3D = level.get_node("Plain") as MeshInstance3D
 
-	if xr_mode == 0:
+	if xr_mode == XRMode.IMMERSIVE:
 		openxr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_OPAQUE
 		world_environment.environment.background_mode = Environment.BG_SKY
 		get_viewport().transparent_bg = false
@@ -55,7 +69,7 @@ func set_xr_mode(p_index: int) -> void:
 		cube_portal.visible = false
 		cube_depth.visible = false
 
-	elif xr_mode >= 1:
+	elif xr_mode in [XRMode.PORTAL, XRMode.VOLUME]:
 		openxr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND
 		world_environment.environment.background_mode = Environment.BG_COLOR
 		world_environment.environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
@@ -81,3 +95,32 @@ func set_xr_mode(p_index: int) -> void:
 			flat_portal.visible = false
 			cube_portal.visible = true
 			cube_depth.visible = true
+
+	elif xr_mode == XRMode.SPATIAL_CONTAINER:
+		openxr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND
+		world_environment.environment.background_mode = Environment.BG_COLOR
+		world_environment.environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
+		get_viewport().transparent_bg = true
+
+		xr_origin.position = Vector3.ZERO
+		game_parent.position = Vector3.ZERO
+		game_parent.scale = Vector3(0.1, 0.1, 0.1)
+		faux_sky_box.visible = false
+		plain.visible = false
+		flat_portal.visible = false
+		cube_portal.visible = false
+		cube_depth.visible = true
+
+
+func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, p_updated_bounds: Vector3) -> void:
+	var min_dimension: float = min(p_updated_bounds.x, min(p_updated_bounds.y, p_updated_bounds.z))
+
+	game_parent.scale = Vector3.ONE * (min_dimension / 10.0)
+	game_parent.position.y = (-p_updated_bounds.y / 2.0) + 0.001
+	game_parent.position.z = p_updated_bounds.z - game_parent.scale.x
+
+	print("Updated bounds: ", p_updated_bounds, " | New scale: ", game_parent.scale)
+
+
+func _on_spatial_container_interactability_changed(_spatial_container_rid: RID, p_interactability: OpenXRSpatialContainerState.Interactability) -> void:
+	print("Interactability changed to " + str(p_interactability))
