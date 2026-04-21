@@ -32,15 +32,14 @@ func _ready() -> void:
 		spatial_container_ext.spatial_container_bounds_changed.connect(_on_spatial_container_bounds_changed)
 		spatial_container_ext.spatial_container_interactability_changed.connect(_on_spatial_container_interactability_changed)
 
-	if xr_mode != XRMode.SPATIAL_CONTAINER:
-		stencilizer.setup_portal_material(flat_portal)
-		stencilizer.setup_portal_material(cube_portal)
+	stencilizer.setup_portal_material(flat_portal)
+	stencilizer.setup_portal_material(cube_portal)
 
 	level.object_spawned.connect(_on_level_object_spawned)
 
 
 func _on_level_object_spawned(obj: Node3D) -> void:
-	if xr_mode in [XRMode.PORTAL, XRMode.VOLUME]:
+	if xr_mode >= XRMode.PORTAL:
 		stencilizer.setup_object_materials(obj)
 
 
@@ -113,6 +112,8 @@ func set_xr_mode(p_index: XRMode) -> void:
 		world_environment.environment.background_mode = Environment.BG_COLOR
 		world_environment.environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
 		get_viewport().transparent_bg = true
+		stencilizer.setup_object_materials(player)
+		stencilizer.setup_object_materials(level)
 
 		xr_origin.position = Vector3.ZERO
 		game_parent.position = Vector3.ZERO
@@ -120,16 +121,24 @@ func set_xr_mode(p_index: XRMode) -> void:
 		faux_sky_box.visible = false
 		plain.visible = false
 		flat_portal.visible = false
-		cube_portal.visible = false
+		cube_portal.visible = true
+		cube_portal.position = Vector3.ZERO
 		cube_depth.visible = true
+		cube_depth.position = Vector3.ZERO
 
 
 func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, p_updated_bounds: Vector3) -> void:
 	var min_dimension: float = min(p_updated_bounds.x, min(p_updated_bounds.y, p_updated_bounds.z))
+	if min_dimension <= 0.0:
+		print("Invalid spatial container bounds received: ", p_updated_bounds)
+		return
 
-	game_parent.scale = Vector3.ONE * (min_dimension / 10.0)
+	cube_depth.mesh.size = p_updated_bounds * 0.99
+	print("Cube depth size: ", cube_depth.mesh.size)
+
+	game_parent.scale = Vector3.ONE * (min_dimension / 20.0)
 	game_parent.position.y = (-p_updated_bounds.y / 2.0) + 0.001
-	game_parent.position.z = p_updated_bounds.z - game_parent.scale.x
+	game_parent.position.z = (p_updated_bounds.z  / 2.0) - (game_parent.scale.z * 1.0)
 
 	print("Updated bounds: ", p_updated_bounds, " | New scale: ", game_parent.scale)
 

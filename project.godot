@@ -19,8 +19,10 @@ run/main_scene.xr="uid://c2s2q001dyx3t"
 [autoload]
 
 GameState="*uid://rtf0jxr6lej6"
-XRToolsUserSettings="*uid://bqgb8i74tm0t"
-XRToolsRumbleManager="*uid://by853dk86g1qw"
+
+[debug]
+
+settings/stdout/verbose_stdout=true
 
 [display]
 
@@ -95,8 +97,7 @@ pause={
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
+renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.301961, 0.301961, 0.301961, 1)
 quality/driver/driver_name="GLES2"
