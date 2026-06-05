@@ -11,18 +11,20 @@ func _init(p_value: int) -> void:
 
 func setup_object_materials(p_parent: Node3D) -> void:
 	if p_parent is MeshInstance3D:
-		_update_object(p_parent)
+		_update_mesh_instance(p_parent)
 	for child in p_parent.find_children("*", "MeshInstance3D", true, false):
-		_update_object(child)
+		_update_mesh_instance(child)
+	for child in p_parent.find_children("*", "GPUParticles3D", true, false):
+		_update_gpu_particles(child)
 
 
-func _update_object(p_mesh: MeshInstance3D) -> void:
+func _update_mesh_instance(p_mesh: MeshInstance3D) -> void:
 	var surface_count := p_mesh.mesh.get_surface_count()
 	for i in range(surface_count):
-		_update_object_material(p_mesh, i)
+		_update_mesh_instance_material(p_mesh, i)
 
 
-func _update_object_material(p_mesh: MeshInstance3D, i: int) -> void:
+func _update_mesh_instance_material(p_mesh: MeshInstance3D, i: int) -> void:
 	var mat := p_mesh.get_active_material(i)
 	if not mat:
 		return
@@ -30,22 +32,41 @@ func _update_object_material(p_mesh: MeshInstance3D, i: int) -> void:
 		return
 
 	if mat and mat is StandardMaterial3D:
-		if _materials.has(mat):
-			p_mesh.set_surface_override_material(i, _materials[mat as StandardMaterial3D])
-		else:
-			var new_mat: StandardMaterial3D = mat.duplicate()
-			new_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-			new_mat.cull_mode = BaseMaterial3D.CULL_BACK
-			new_mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
-			new_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
-			new_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_READ
-			new_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_EQUAL
-			new_mat.stencil_reference = _value
+		p_mesh.set_surface_override_material(i, _get_stencilized_material(mat))
 
-			p_mesh.set_surface_override_material(i, new_mat)
 
-			_materials[mat as StandardMaterial3D] = new_mat
-			_materials_inverse[new_mat] = mat as StandardMaterial3D
+func _update_gpu_particles(p_gpu_particles: GPUParticles3D) -> void:
+	var meshes := [
+		p_gpu_particles.draw_pass_1,
+		p_gpu_particles.draw_pass_2,
+		p_gpu_particles.draw_pass_3,
+		p_gpu_particles.draw_pass_4,
+	]
+	for mesh in meshes:
+		if not mesh:
+			continue
+		var mat: Material = mesh.material
+		if mat and mat is StandardMaterial3D:
+			mesh.material = _get_stencilized_material(mat)
+
+
+func _get_stencilized_material(p_material: StandardMaterial3D) -> StandardMaterial3D:
+	if _materials.has(p_material):
+		return _materials[p_material]
+
+	var new_mat: StandardMaterial3D = p_material.duplicate()
+	new_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	new_mat.cull_mode = BaseMaterial3D.CULL_BACK
+	new_mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
+	new_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	new_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_READ
+	new_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_EQUAL
+	new_mat.stencil_reference = _value
+
+	_materials[p_material] = new_mat
+	_materials_inverse[new_mat] = p_material
+
+	return new_mat
 
 
 func restore_object_materials(p_parent: Node3D) -> void:
@@ -71,6 +92,9 @@ func setup_portal_material(p_portal: MeshInstance3D) -> void:
 	if mat and mat is StandardMaterial3D:
 		var new_mat: StandardMaterial3D = mat.duplicate()
 		new_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		new_mat.albedo_color = Color(0.0, 0.0, 0.0, 0.0)
+		new_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		new_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		new_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
 		new_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
 		new_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
