@@ -1,7 +1,7 @@
 class_name MovingObject
 extends Node3D
 
-const XRConvUtils = preload("res://src/xrconv/utils.gd")
+const XRConvUtils = preload("res://addons/spatialize/utils.gd")
 
 const SPEED := 15.0
 const MAX_Z := 30.0

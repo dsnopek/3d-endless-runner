@@ -1,6 +1,6 @@
 extends "res://src/main/main.gd"
 
-const Stencilizer = preload("res://src/xrconv/stencilizer.gd")
+const Stencilizer = preload("res://addons/spatialize/stencilizer.gd")
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var flat_portal: MeshInstance3D = $FlatPortal

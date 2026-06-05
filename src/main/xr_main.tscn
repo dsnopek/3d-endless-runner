@@ -5,10 +5,10 @@
 [ext_resource type="PackedScene" uid="uid://c2a5i2mnt6gur" path="res://src/player/player.tscn" id="2_f4vlo"]
 [ext_resource type="PackedScene" uid="uid://cqs8c3rq6cxvk" path="res://addons/sgxr/function_pointer.tscn" id="2_fj4q1"]
 [ext_resource type="PackedScene" uid="uid://yc5a1y6o8w4v" path="res://src/main/ui.tscn" id="3_htayq"]
-[ext_resource type="PackedScene" uid="uid://df502krdp6gav" path="res://src/xrconv/input/controller_input.tscn" id="3_mbvhy"]
+[ext_resource type="PackedScene" uid="uid://df502krdp6gav" path="res://addons/spatialize/input/controller_input.tscn" id="3_mbvhy"]
 [ext_resource type="PackedScene" uid="uid://btrugoluitgin" path="res://addons/sgxr/ui_layer/ui_layer.tscn" id="4_htayq"]
 [ext_resource type="PackedScene" uid="uid://br72i82f12kke" path="res://addons/sgxr/start_xr.tscn" id="6_7g231"]
-[ext_resource type="Shader" uid="uid://cjoukwkhgbjvi" path="res://src/xrconv/portal_depth.gdshader" id="7_q8ysa"]
+[ext_resource type="PackedScene" uid="uid://801oo4p7devm" path="res://addons/spatialize/cube_depth.tscn" id="7_q8ysa"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_mbvhy"]
 size = Vector2(4, 4)
@@ -24,10 +24,6 @@ size = Vector3(1.5, 1, 2.68663)
 transparency = 1
 cull_mode = 2
 albedo_color = Color(1, 1, 1, 0)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kx56g"]
-render_priority = -25
-shader = ExtResource("7_q8ysa")
 
 [node name="XRMain" type="Node3D" unique_id=157902441 node_paths=PackedStringArray("level", "player", "ui")]
 script = ExtResource("1_f4vlo")
@@ -84,11 +80,9 @@ visible = false
 mesh = SubResource("BoxMesh_mbvhy")
 surface_material_override/0 = SubResource("StandardMaterial3D_mbvhy")
 
-[node name="CubeDepth" type="MeshInstance3D" parent="." unique_id=487214919]
+[node name="CubeDepth" parent="." unique_id=1421330224 instance=ExtResource("7_q8ysa")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53195, -1.34231)
 visible = false
-mesh = SubResource("BoxMesh_mbvhy")
-surface_material_override/0 = SubResource("ShaderMaterial_kx56g")
 
 [node name="GameParent" type="Node3D" parent="." unique_id=1062574795]
 
