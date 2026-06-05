@@ -71,17 +71,34 @@ func _get_stencilized_material(p_material: StandardMaterial3D) -> StandardMateri
 
 func restore_object_materials(p_parent: Node3D) -> void:
 	if p_parent is MeshInstance3D:
-		_restore_object(p_parent)
+		_restore_mesh_instance(p_parent)
 	for child in p_parent.find_children("*", "MeshInstance3D", true, false):
-		_restore_object(child)
+		_restore_mesh_instance(child)
+	for child in p_parent.find_children("*", "GPUParticles3D", true, false):
+		_restore_gpu_particles(child)
 
 
-func _restore_object(p_mesh: MeshInstance3D) -> void:
+func _restore_mesh_instance(p_mesh: MeshInstance3D) -> void:
 	var surface_count := p_mesh.mesh.get_surface_count()
 	for i in range(surface_count):
 		var mat := p_mesh.get_surface_override_material(i)
 		if mat and _materials_inverse.has(mat):
 			p_mesh.set_surface_override_material(i, _materials_inverse[mat as StandardMaterial3D])
+
+
+func _restore_gpu_particles(p_gpu_particles: GPUParticles3D) -> void:
+	var meshes := [
+		p_gpu_particles.draw_pass_1,
+		p_gpu_particles.draw_pass_2,
+		p_gpu_particles.draw_pass_3,
+		p_gpu_particles.draw_pass_4,
+	]
+	for mesh in meshes:
+		if not mesh:
+			continue
+		var mat: Material = mesh.material
+		if mat and _materials_inverse.has(mat):
+			mesh.material = _materials_inverse[mat as StandardMaterial3D]
 
 
 func setup_portal_material(p_portal: MeshInstance3D) -> void:
