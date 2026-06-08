@@ -1,5 +1,11 @@
 extends Node
 
+## A node that can automatically convert input from XR controllers into standard non-XR gamepad input.
+##
+## Add this node to your scene, and if you didn't change the default OpenXR action map, it should
+## just work! If you did change the action map, you'll need to update the exposed properties on the
+## node to match.
+
 const LEFT_HAND_TRACKER_NAME = "left_hand"
 const RIGHT_HAND_TRACKER_NAME = "right_hand"
 

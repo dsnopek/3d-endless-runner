@@ -1,21 +1,67 @@
 extends RefCounted
 
-var _value := 1
+## Utility for using stencils (requires Godot 4.5+) to restrict rendering to a portal.
+
+var _value: int
 var _materials: Dictionary[StandardMaterial3D, StandardMaterial3D] = {}
 var _materials_inverse: Dictionary[StandardMaterial3D, StandardMaterial3D] = {}
 
 
-func _init(p_value: int) -> void:
+## Pass in the stencil reference value you would like to use for your portal.
+func _init(p_value: int = 1) -> void:
 	_value = p_value
 
 
+## Modifies StandardMaterial3D's on the given node and all descendants so it only appears in the portal.
+##
+## If you're using a custom ShaderMaterial, it'll need to be modified manually.
 func setup_object_materials(p_parent: Node3D) -> void:
 	if p_parent is MeshInstance3D:
 		_update_mesh_instance(p_parent)
 	for child in p_parent.find_children("*", "MeshInstance3D", true, false):
 		_update_mesh_instance(child)
+
+	if p_parent is GPUParticles3D:
+		_update_gpu_particles(p_parent)
 	for child in p_parent.find_children("*", "GPUParticles3D", true, false):
 		_update_gpu_particles(child)
+
+
+## Restores the given node and all descendants to their original StandardMaterial3D materials.
+##
+## This is the reverse of `setup_object_materials()`.
+func restore_object_materials(p_parent: Node3D) -> void:
+	if p_parent is MeshInstance3D:
+		_restore_mesh_instance(p_parent)
+	for child in p_parent.find_children("*", "MeshInstance3D", true, false):
+		_restore_mesh_instance(child)
+
+	if p_parent is GPUParticles3D:
+		_restore_gpu_particles(p_parent)
+	for child in p_parent.find_children("*", "GPUParticles3D", true, false):
+		_restore_gpu_particles(child)
+
+
+## Modifies the StandardMaterial3D of the given node to act as a portal.
+##
+## Can work on both flat (`QuadMesh`) or cube-shaped (`BoxMesh`) portals.
+func setup_portal_material(p_portal: MeshInstance3D) -> void:
+	var mat := p_portal.get_active_material(0)
+	if not mat:
+		mat = StandardMaterial3D.new()
+
+	if mat and mat is StandardMaterial3D:
+		var new_mat: StandardMaterial3D = mat.duplicate()
+		new_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		new_mat.albedo_color = Color(0.0, 0.0, 0.0, 0.0)
+		new_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		new_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+		new_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+		new_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
+		new_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
+		new_mat.stencil_reference = _value
+		new_mat.render_priority = -50
+		p_portal.set_surface_override_material(0, new_mat)
 
 
 func _update_mesh_instance(p_mesh: MeshInstance3D) -> void:
@@ -69,15 +115,6 @@ func _get_stencilized_material(p_material: StandardMaterial3D) -> StandardMateri
 	return new_mat
 
 
-func restore_object_materials(p_parent: Node3D) -> void:
-	if p_parent is MeshInstance3D:
-		_restore_mesh_instance(p_parent)
-	for child in p_parent.find_children("*", "MeshInstance3D", true, false):
-		_restore_mesh_instance(child)
-	for child in p_parent.find_children("*", "GPUParticles3D", true, false):
-		_restore_gpu_particles(child)
-
-
 func _restore_mesh_instance(p_mesh: MeshInstance3D) -> void:
 	var surface_count := p_mesh.mesh.get_surface_count()
 	for i in range(surface_count):
@@ -99,22 +136,3 @@ func _restore_gpu_particles(p_gpu_particles: GPUParticles3D) -> void:
 		var mat: Material = mesh.material
 		if mat and _materials_inverse.has(mat):
 			mesh.material = _materials_inverse[mat as StandardMaterial3D]
-
-
-func setup_portal_material(p_portal: MeshInstance3D) -> void:
-	var mat := p_portal.get_active_material(0)
-	if not mat:
-		mat = StandardMaterial3D.new()
-
-	if mat and mat is StandardMaterial3D:
-		var new_mat: StandardMaterial3D = mat.duplicate()
-		new_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		new_mat.albedo_color = Color(0.0, 0.0, 0.0, 0.0)
-		new_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		new_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-		new_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
-		new_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
-		new_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
-		new_mat.stencil_reference = _value
-		new_mat.render_priority = -50
-		p_portal.set_surface_override_material(0, new_mat)

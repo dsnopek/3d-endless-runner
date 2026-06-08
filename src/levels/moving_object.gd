@@ -1,7 +1,7 @@
 class_name MovingObject
 extends Node3D
 
-const XRConvUtils = preload("res://addons/spatialize/utils.gd")
+const SpatializeUtils = preload("res://addons/spatialize/utils.gd")
 
 const SPEED := 15.0
 const MAX_Z := 30.0
@@ -15,7 +15,7 @@ func _process(p_delta: float) -> void:
 	if not parent or not parent is Node3D:
 		return
 
-	if XRConvUtils.get_relative_position(parent, GameState.current_level).z > MAX_Z:
+	if SpatializeUtils.get_relative_position(parent, GameState.current_level).z > MAX_Z:
 		parent.queue_free()
 		return
 
