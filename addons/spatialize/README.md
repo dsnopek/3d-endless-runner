@@ -125,6 +125,19 @@ portal.
 This will fill the depth buffer to prevent rendering anything beyond the bounds
 of the cube.
 
+User Interface
+--------------
+
+Your game probably has some 2D user interface, including menus and/or a HUD.
+
+The simplest way to get these into your game, is to add a `viewport_2d_in_3d.tscn`
+from XR Tools and setting its **Content** -> **Scene** property to point to your
+top-level UI or HUD scene.
+
+Then instantiate `function_pointer.tscn` scenes from XR Tools under each of the
+`XRController3D` nodes in your main XR scene. This will give the user pointers
+attached to their hands which they can use to click inside the 2D UI.
+
 Input
 -----
 
