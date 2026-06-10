@@ -3,6 +3,7 @@ extends "res://src/main/main.gd"
 const Stencilizer = preload("res://addons/spatialize/stencilizer.gd")
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
+@onready var viewport_2d_in_3d: Node3D = %Viewport2Din3D
 @onready var flat_portal: MeshInstance3D = $FlatPortal
 @onready var cube_portal: MeshInstance3D = $CubePortal
 @onready var cube_depth: MeshInstance3D = $CubeDepth
@@ -13,6 +14,9 @@ var stencilizer: Stencilizer = Stencilizer.new(1)
 var xr_mode: int = 0
 
 func _ready() -> void:
+	ui = viewport_2d_in_3d.get_scene_instance()
+	ui.xr_mode_changed.connect(_on_ui_xr_mode_changed)
+
 	super._ready()
 
 	stencilizer.setup_portal_material(flat_portal)

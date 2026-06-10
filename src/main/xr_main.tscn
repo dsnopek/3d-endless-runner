@@ -3,12 +3,16 @@
 [ext_resource type="PackedScene" uid="uid://c8yo5q5ynfhob" path="res://src/levels/level.tscn" id="1_3d3yk"]
 [ext_resource type="Script" uid="uid://7kkuv7k25lds" path="res://src/main/xr_main.gd" id="1_f4vlo"]
 [ext_resource type="PackedScene" uid="uid://c2a5i2mnt6gur" path="res://src/player/player.tscn" id="2_f4vlo"]
-[ext_resource type="PackedScene" uid="uid://cqs8c3rq6cxvk" path="res://addons/sgxr/function_pointer.tscn" id="2_fj4q1"]
+[ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="2_q8ysa"]
 [ext_resource type="PackedScene" uid="uid://yc5a1y6o8w4v" path="res://src/main/ui.tscn" id="3_htayq"]
 [ext_resource type="PackedScene" uid="uid://df502krdp6gav" path="res://addons/spatialize/input/controller_input.tscn" id="3_mbvhy"]
-[ext_resource type="PackedScene" uid="uid://btrugoluitgin" path="res://addons/sgxr/ui_layer/ui_layer.tscn" id="4_htayq"]
-[ext_resource type="PackedScene" uid="uid://br72i82f12kke" path="res://addons/sgxr/start_xr.tscn" id="6_7g231"]
+[ext_resource type="PackedScene" uid="uid://cqhw276realc" path="res://addons/godot-xr-tools/functions/function_pointer.tscn" id="4_kx56g"]
+[ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="4_q8ysa"]
 [ext_resource type="PackedScene" uid="uid://801oo4p7devm" path="res://addons/spatialize/cube_depth.tscn" id="7_q8ysa"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kx56g"]
+transparency = 1
+shading_mode = 0
 
 [sub_resource type="QuadMesh" id="QuadMesh_mbvhy"]
 size = Vector2(4, 4)
@@ -25,13 +29,16 @@ transparency = 1
 cull_mode = 2
 albedo_color = Color(1, 1, 1, 0)
 
-[node name="XRMain" type="Node3D" unique_id=157902441 node_paths=PackedStringArray("level", "player", "ui")]
+[sub_resource type="BoxMesh" id="BoxMesh_q8ysa"]
+resource_local_to_scene = true
+size = Vector3(1.5, 1, 2.68663)
+
+[node name="XRMain" type="Node3D" unique_id=157902441 node_paths=PackedStringArray("level", "player")]
 script = ExtResource("1_f4vlo")
 level = NodePath("GameParent/Level")
 player = NodePath("GameParent/Player")
-ui = NodePath("XROrigin3D/UILayer/SubViewport/UI")
 
-[node name="StartXR" parent="." unique_id=1764186819 instance=ExtResource("6_7g231")]
+[node name="StartXR" parent="." unique_id=714126108 instance=ExtResource("2_q8ysa")]
 
 [node name="ControllerInput" parent="." unique_id=100622756 instance=ExtResource("3_mbvhy")]
 
@@ -44,29 +51,33 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4457209, 0)
 [node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=1817380320]
 tracker = &"left_hand"
 
-[node name="FunctionPointer" parent="XROrigin3D/LeftController" unique_id=1664724883 instance=ExtResource("2_fj4q1")]
+[node name="FunctionPointer" parent="XROrigin3D/LeftController" unique_id=193773826 instance=ExtResource("4_kx56g")]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 0.05, -0.1)
+show_laser = 2
+laser_length = 1
+show_target = true
 
 [node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=844495451]
 tracker = &"right_hand"
 
-[node name="FunctionPointer" parent="XROrigin3D/RightController" unique_id=1621507524 instance=ExtResource("2_fj4q1")]
+[node name="FunctionPointer" parent="XROrigin3D/RightController" unique_id=2107310385 instance=ExtResource("4_kx56g")]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, 0.05, -0.1)
+show_laser = 2
+laser_length = 1
+show_target = true
 
-[node name="UILayer" parent="XROrigin3D" unique_id=731748485 node_paths=PackedStringArray("layer_viewport") instance=ExtResource("4_htayq")]
+[node name="Viewport2Din3D" parent="XROrigin3D" unique_id=458023143 instance=ExtResource("4_q8ysa")]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6147649, -2.6866283)
-quad_size = Vector2(2, 2)
-layer_viewport = NodePath("SubViewport")
-layer_sort_order = 1
-transparent_bg = true
-force_fallback = true
-
-[node name="SubViewport" type="SubViewport" parent="XROrigin3D/UILayer" unique_id=357428084]
-disable_3d = true
-transparent_bg = true
-gui_embed_subwindows = true
-size = Vector2i(1024, 1024)
-render_target_update_mode = 4
-
-[node name="UI" parent="XROrigin3D/UILayer/SubViewport" unique_id=1978803305 instance=ExtResource("3_htayq")]
+screen_size = Vector2(2, 2)
+collision_layer = 5242880
+scene = ExtResource("3_htayq")
+viewport_size = Vector2(1024, 1024)
+material = SubResource("StandardMaterial3D_kx56g")
+transparent = 1
+scene_properties_keys = PackedStringArray("ui.gd")
 
 [node name="FlatPortal" type="MeshInstance3D" parent="." unique_id=644995825]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9790702, 1.1099961)
@@ -83,6 +94,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_mbvhy")
 [node name="CubeDepth" parent="." unique_id=1421330224 instance=ExtResource("7_q8ysa")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53195, -1.34231)
 visible = false
+mesh = SubResource("BoxMesh_q8ysa")
 
 [node name="GameParent" type="Node3D" parent="." unique_id=1062574795]
 
@@ -101,5 +113,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
 
 [node name="VolumeGameMarker" type="Marker3D" parent="." unique_id=55051624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0176864, 0)
-
-[connection signal="xr_mode_changed" from="XROrigin3D/UILayer/SubViewport/UI" to="." method="_on_ui_xr_mode_changed"]
