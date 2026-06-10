@@ -26,9 +26,3 @@ unique_name_in_owner = true
 
 [connection signal="coin_collected" from="Player" to="." method="_on_player_coin_collected"]
 [connection signal="player_died" from="Player" to="." method="_on_player_player_died"]
-[connection signal="pause_pressed" from="CanvasLayer/UI" to="." method="_on_ui_pause_pressed"]
-[connection signal="play_pressed" from="CanvasLayer/UI" to="." method="_on_ui_play_pressed"]
-[connection signal="quit_pressed" from="CanvasLayer/UI" to="." method="_on_ui_quit_pressed"]
-[connection signal="resume_pressed" from="CanvasLayer/UI" to="." method="_on_ui_resume_pressed"]
-[connection signal="retry_pressed" from="CanvasLayer/UI" to="." method="_on_ui_retry_pressed"]
-[connection signal="return_to_menu_pressed" from="CanvasLayer/UI" to="." method="_on_ui_return_to_menu_pressed"]
