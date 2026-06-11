@@ -17,7 +17,7 @@ In "Project Settings":
 
 Now, we'll need to add some nodes to your the main XR scene. This could be the
 same as the flat main scene, or a new main scene just for XR, which can include
-all the XR specific nodes, and then perhaps instance your game scene inside of it.
+all the XR-specific nodes, and then perhaps instance your game scene inside of it.
 
 In any case, add these to your main XR scene:
 
@@ -26,8 +26,8 @@ In any case, add these to your main XR scene:
 - Add two `XRController3D` nodes as children of the `XROrigin3D` node,
   and set their "Tracker" properties to "left_hand" and "right_hand".
 
-Add an instance of the `start_xr.tscn` scene from XR Tools to your main scene.
-This will automatically start OpenXR when your application launches.
+Finally, add an instance of the `start_xr.tscn` scene from XR Tools to your main
+XR scene. This will automatically start OpenXR when your application launches.
 
 Rendering
 ---------
@@ -72,7 +72,8 @@ func _process(delta) -> void:
   var gp := SpatializeUtils.get_relative_position(self, game_parent)
 ```
 
-This code will work both in XR and non-XR.
+This code will work both in XR and non-XR, so long as you use the right
+`game_parent` for each mode.
 
 ### Portal
 
@@ -97,8 +98,8 @@ func _ready() -> void:
   stencilizer.setup_portal_material(portal_mesh)
 
   # Then use stencilizer to setup the material on all the meshes in the game world.
-  # This will work for anything that uses `StandardMaterial3D` - you use custom
-  # `ShaderMaterial`'s then you'll need to update those manually.
+  # This will work for anything that uses `StandardMaterial3D` - if you use custom
+  # `ShaderMaterial`'s, then you'll need to update those manually.
   stencilizer.setup_object_material(game_parent)
 ```
 
@@ -115,7 +116,7 @@ diorama.
 
 However, if you were to just run your game like this, it wouldn't really feel
 like it's in your room, because Godot's render distance isn't limited to the
-volume. So long as you're looking through the cube, it will render the the
+volume. So long as you're looking through the cube, it will render the full
 far distance of the camera.
 
 To fix this, instantiate a `cube_depth.tscn` scene from this addon into your
@@ -128,16 +129,29 @@ of the cube.
 User Interface
 --------------
 
-Your game probably has some 2D user interface, including menus and/or a HUD.
+Your game probably has some 2D user interface, like a menu or a HUD.
 
-The simplest way to get these into your game, is to add a `viewport_2d_in_3d.tscn`
-from XR Tools and setting its **Content** -> **Scene** property to point to your
-top-level UI or HUD scene.
+The simplest way to get these into your game, is to instantiate a
+`viewport_2d_in_3d.tscn` from XR Tools and setting its **Content** -> **Scene**
+property to point to your top-level UI or HUD scene.
 
 Then instantiate `function_pointer.tscn` scenes from XR Tools under each of the
 `XRController3D` nodes in your main XR scene. This will give the user pointers
 attached to their hands which they can use to click inside the 2D UI.
 
+See the [XR Tools documentation](https://github.com/GodotVR/godot-xr-tools/wiki)
+for more details.
+
 Input
 -----
 
+Input from XR controllers doesn't normally come through Godot's input system,
+and instead uses a different system.
+
+However, if you instantiate a `controller_input.tscn` scene from this addon
+in your main XR scene, it will automatically convert input from XR controllers
+into gamepad input in Godot's normal input system.
+
+If you've changed the default OpenXR action map, you will need to update
+the properties on the node to match. However, if you've kept the default values,
+it should just work!
