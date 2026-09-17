@@ -33,7 +33,6 @@ func _ready() -> void:
 	if spatial_container_ext and spatial_container_ext.is_enabled():
 		set_xr_mode(XRMode.SPATIAL_CONTAINER)
 		spatial_container_ext.spatial_container_bounds_changed.connect(_on_spatial_container_bounds_changed)
-		spatial_container_ext.spatial_container_interactability_changed.connect(_on_spatial_container_interactability_changed)
 
 	stencilizer.setup_portal_material(flat_portal)
 	stencilizer.setup_portal_material(cube_portal)
@@ -130,7 +129,7 @@ func set_xr_mode(p_index: XRMode) -> void:
 		cube_depth.position = Vector3.ZERO
 
 
-func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, p_updated_bounds: Vector3) -> void:
+func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, _infinite_bounds: bool, p_bounds_mode: OpenXRSpatialContainerState.BoundsMode, p_updated_bounds: Vector3) -> void:
 	var min_dimension: float = min(p_updated_bounds.x, min(p_updated_bounds.y, p_updated_bounds.z))
 	if min_dimension <= 0.0:
 		print("Invalid spatial container bounds received: ", p_updated_bounds)
@@ -144,7 +143,3 @@ func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, p_updated
 	game_parent.position.z = (p_updated_bounds.z  / 2.0) - (game_parent.scale.z * 1.0)
 
 	print("Updated bounds: ", p_updated_bounds, " | New scale: ", game_parent.scale)
-
-
-func _on_spatial_container_interactability_changed(_spatial_container_rid: RID, p_interactability: OpenXRSpatialContainerState.Interactability) -> void:
-	print("Interactability changed to " + str(p_interactability))
