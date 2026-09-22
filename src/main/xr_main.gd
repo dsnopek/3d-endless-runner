@@ -19,11 +19,11 @@ enum XRMode {
 	IMMERSIVE,
 	PORTAL,
 	VOLUME,
-	SPATIAL_CONTAINER,
 }
 
 var stencilizer: Stencilizer = Stencilizer.new(1)
 var xr_mode: XRMode = XRMode.IMMERSIVE
+var uses_spatial_container := false
 
 func _ready() -> void:
 	ui = viewport_2d_in_3d.get_scene_instance()
@@ -33,8 +33,8 @@ func _ready() -> void:
 
 	var spatial_container_ext = Engine.get_singleton("OpenXRSpatialContainerExtension")
 	if spatial_container_ext and spatial_container_ext.is_enabled():
-		set_xr_mode(XRMode.SPATIAL_CONTAINER)
 		spatial_container_ext.spatial_container_bounds_changed.connect(_on_spatial_container_bounds_changed)
+		uses_spatial_container = true
 
 	stencilizer.setup_portal_material(flat_portal)
 	stencilizer.setup_portal_material(cube_portal)
@@ -52,7 +52,7 @@ func _on_ui_xr_mode_changed(p_index: int) -> void:
 
 
 func _process(_delta: float) -> void:
-	if xr_mode == XRMode.SPATIAL_CONTAINER:
+	if uses_spatial_container and xr_mode != XRMode.IMMERSIVE:
 		viewport_2d_in_3d.global_transform = %SpatialContainerUIMarker.global_transform
 		if viewport_2d_in_3d.scale.x < UI_LAYER_MIN_SCALE:
 			viewport_2d_in_3d.scale = Vector3.ONE * UI_LAYER_MIN_SCALE
@@ -84,6 +84,9 @@ func set_xr_mode(p_index: XRMode) -> void:
 		cube_portal.visible = false
 		cube_depth.visible = false
 
+		if uses_spatial_container:
+			OpenXRSpatialContainerExtension.request_spatial_container_bounds_mode(OpenXRSpatialContainerState.BOUNDS_MODE_IMMERSIVE)
+
 	elif xr_mode in [XRMode.PORTAL, XRMode.VOLUME]:
 		openxr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND
 		world_environment.environment.background_mode = Environment.BG_COLOR
@@ -92,8 +95,8 @@ func set_xr_mode(p_index: XRMode) -> void:
 		stencilizer.setup_object_materials(player)
 		stencilizer.setup_object_materials(level)
 
-		if xr_mode == 1:
-			xr_origin.position = %PortalOriginMarker.position
+		if xr_mode == XRMode.PORTAL:
+			xr_origin.position = %PortalOriginMarker.position if not uses_spatial_container else Vector3.ZERO
 			game_parent.position = Vector3.ZERO
 			game_parent.scale = Vector3.ONE
 			faux_sky_box.visible = true
@@ -101,9 +104,9 @@ func set_xr_mode(p_index: XRMode) -> void:
 			flat_portal.visible = true
 			cube_portal.visible = false
 			cube_depth.visible = false
-		elif xr_mode == 2:
-			xr_origin.position = %VolumeOriginMarker.position
-			game_parent.position = %VolumeGameMarker.position
+		elif xr_mode == XRMode.VOLUME:
+			xr_origin.position = %VolumeOriginMarker.position if not uses_spatial_container else Vector3.ZERO
+			game_parent.position = %VolumeGameMarker.position if not uses_spatial_container else Vector3.ZERO
 			game_parent.scale = Vector3(0.1, 0.1, 0.1)
 			faux_sky_box.visible = false
 			plain.visible = false
@@ -111,24 +114,8 @@ func set_xr_mode(p_index: XRMode) -> void:
 			cube_portal.visible = true
 			cube_depth.visible = true
 
-	elif xr_mode == XRMode.SPATIAL_CONTAINER:
-		openxr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND
-		world_environment.environment.background_mode = Environment.BG_COLOR
-		world_environment.environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
-		get_viewport().transparent_bg = true
-		stencilizer.setup_object_materials(player)
-		stencilizer.setup_object_materials(level)
-
-		xr_origin.position = Vector3.ZERO
-		game_parent.position = Vector3.ZERO
-		game_parent.scale = Vector3(0.1, 0.1, 0.1)
-		faux_sky_box.visible = false
-		plain.visible = false
-		flat_portal.visible = false
-		cube_portal.visible = true
-		cube_portal.position = Vector3.ZERO
-		cube_depth.visible = true
-		cube_depth.position = Vector3.ZERO
+		if uses_spatial_container:
+			OpenXRSpatialContainerExtension.request_spatial_container_bounds_mode(OpenXRSpatialContainerState.BOUNDS_MODE_BOUNDED)
 
 
 func _on_hand_tracking_changed(_tracking: bool) -> void:
@@ -140,17 +127,33 @@ func _on_start_xr_xr_ended() -> void:
 	_on_ui_pause_pressed()
 
 
-func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, _infinite_bounds: bool, p_bounds_mode: OpenXRSpatialContainerState.BoundsMode, p_updated_bounds: Vector3) -> void:
-	var min_dimension: float = min(p_updated_bounds.x, min(p_updated_bounds.y, p_updated_bounds.z))
-	if min_dimension <= 0.0:
-		print("Invalid spatial container bounds received: ", p_updated_bounds)
-		return
+func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, p_infinite_bounds: bool, p_bounds_mode: OpenXRSpatialContainerState.BoundsMode, p_updated_bounds: Vector3) -> void:
+	if p_bounds_mode == OpenXRSpatialContainerState.BOUNDS_MODE_IMMERSIVE:
+		print("Spatial Container: Immersive")
+		game_parent.position = Vector3.ZERO
+		game_parent.scale = Vector3.ONE
+	else:
+		print("Spatial Container: Bounded")
+		var new_bounds: Vector3 = p_updated_bounds if not p_infinite_bounds else Vector3(1.0, 1.0, 1.0)
+		var min_dimension: float = min(new_bounds.x, min(new_bounds.y, new_bounds.z))
+		if min_dimension <= 0.0:
+			print("Spatial Container: Invalid bounds received: ", p_updated_bounds)
+			return
 
-	cube_depth.mesh.size = p_updated_bounds * 0.99
-	print("Cube depth size: ", cube_depth.mesh.size)
+		cube_depth.mesh.size = new_bounds * 0.99
 
-	game_parent.scale = Vector3.ONE * (min_dimension / 20.0)
-	game_parent.position.y = (-p_updated_bounds.y / 2.0) + 0.001
-	game_parent.position.z = (p_updated_bounds.z  / 2.0) - (game_parent.scale.z * 1.0)
+		game_parent.scale = Vector3.ONE * (min_dimension / 20.0)
+		game_parent.position.y = (-new_bounds.y / 2.0) + 0.001
+		game_parent.position.z = (new_bounds.z  / 2.0) - (game_parent.scale.z * 1.0)
 
-	print("Updated bounds: ", p_updated_bounds, " | New scale: ", game_parent.scale)
+		if xr_mode == XRMode.PORTAL:
+			flat_portal.position.y = 0.0
+			flat_portal.position.z = (new_bounds.z / 2.0) - 0.001
+			flat_portal.mesh.size = Vector2(new_bounds.x, new_bounds.y)
+		elif xr_mode == XRMode.VOLUME:
+			cube_portal.position = Vector3.ZERO
+			cube_portal.mesh.size = new_bounds
+			cube_depth.position = Vector3.ZERO
+			cube_depth.mesh.size = new_bounds
+
+		print("Spatial Container: Updated bounds: ", new_bounds, " | New scale: ", game_parent.scale)
