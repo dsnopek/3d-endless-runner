@@ -4,6 +4,8 @@ const Stencilizer = preload("res://addons/spatialize/stencilizer.gd")
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var camera: XRCamera3D = %XRCamera3D
+@onready var left_hand: XRController3D = %LeftHand
+@onready var right_hand: XRController3D = %RightHand
 @onready var viewport_2d_in_3d: Node3D = %Viewport2Din3D
 @onready var flat_portal: MeshInstance3D = $FlatPortal
 @onready var cube_portal: MeshInstance3D = $CubePortal
@@ -127,6 +129,15 @@ func set_xr_mode(p_index: XRMode) -> void:
 		cube_portal.position = Vector3.ZERO
 		cube_depth.visible = true
 		cube_depth.position = Vector3.ZERO
+
+
+func _on_hand_tracking_changed(_tracking: bool) -> void:
+	var hand_tracking_active: bool = left_hand.get_has_tracking_data() or right_hand.get_has_tracking_data()
+	ui.set_on_screen_controls_visibility(hand_tracking_active)
+
+
+func _on_start_xr_xr_ended() -> void:
+	_on_ui_pause_pressed()
 
 
 func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, _infinite_bounds: bool, p_bounds_mode: OpenXRSpatialContainerState.BoundsMode, p_updated_bounds: Vector3) -> void:
