@@ -11,6 +11,11 @@
 [ext_resource type="Material" uid="uid://j5u0ym0rk04f" path="res://src/main/xr_hand_tracking_material.tres" id="5_kx56g"]
 [ext_resource type="PackedScene" uid="uid://801oo4p7devm" path="res://addons/spatialize/cube_depth.tscn" id="7_q8ysa"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_umpgj"]
+render_priority = 127
+transparency = 1
+shading_mode = 0
+
 [sub_resource type="QuadMesh" id="QuadMesh_mbvhy"]
 size = Vector2(4, 4)
 
@@ -121,6 +126,7 @@ screen_size = Vector2(2, 2)
 collision_layer = 5242880
 scene = ExtResource("3_htayq")
 viewport_size = Vector2(1024, 1024)
+material = SubResource("StandardMaterial3D_umpgj")
 unshaded = true
 scene_properties_keys = PackedStringArray("ui.gd")
 
@@ -146,10 +152,6 @@ mesh = SubResource("BoxMesh_kx56g")
 [node name="Level" parent="GameParent" unique_id=404567282 instance=ExtResource("1_3d3yk")]
 
 [node name="Player" parent="GameParent" unique_id=610491167 instance=ExtResource("2_f4vlo")]
-
-[node name="SpatialContainerUIMarker" type="Marker3D" parent="GameParent" unique_id=1221189676]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4587803, -5.3720903)
 
 [node name="VROriginMarker" type="Marker3D" parent="." unique_id=1717720349]
 unique_name_in_owner = true

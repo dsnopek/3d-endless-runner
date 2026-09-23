@@ -4,9 +4,12 @@ const Stencilizer = preload("res://addons/spatialize/stencilizer.gd")
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var camera: XRCamera3D = %XRCamera3D
+@onready var left_function_pointer = $XROrigin3D/LeftController/FunctionPointer
+@onready var right_function_pointer = $XROrigin3D/RightController/FunctionPointer
 @onready var left_hand: XRController3D = %LeftHand
 @onready var right_hand: XRController3D = %RightHand
 @onready var viewport_2d_in_3d: Node3D = %Viewport2Din3D
+@onready var viewport_2d_in_3d_transform_orig: Transform3D = viewport_2d_in_3d.transform
 @onready var flat_portal: MeshInstance3D = $FlatPortal
 @onready var cube_portal: MeshInstance3D = $CubePortal
 @onready var cube_depth: MeshInstance3D = $CubeDepth
@@ -14,6 +17,7 @@ const Stencilizer = preload("res://addons/spatialize/stencilizer.gd")
 @onready var world_environment: WorldEnvironment = $GameParent/Level/WorldEnvironment
 
 const UI_LAYER_MIN_SCALE := 0.25
+const FUNCTION_POINTER_DEFAULT_TARGET_RADIUS := 0.05
 
 enum XRMode {
 	IMMERSIVE,
@@ -53,10 +57,13 @@ func _on_ui_xr_mode_changed(p_index: int) -> void:
 
 func _process(_delta: float) -> void:
 	if uses_spatial_container and xr_mode != XRMode.IMMERSIVE:
-		viewport_2d_in_3d.global_transform = %SpatialContainerUIMarker.global_transform
+		viewport_2d_in_3d.position = Vector3.ZERO
+		viewport_2d_in_3d.scale = game_parent.scale
 		if viewport_2d_in_3d.scale.x < UI_LAYER_MIN_SCALE:
 			viewport_2d_in_3d.scale = Vector3.ONE * UI_LAYER_MIN_SCALE
-		viewport_2d_in_3d.look_at(camera.global_transform.origin, Vector3.UP, true)
+
+		left_function_pointer.target_radius = FUNCTION_POINTER_DEFAULT_TARGET_RADIUS * viewport_2d_in_3d.scale.x
+		right_function_pointer.target_radius = FUNCTION_POINTER_DEFAULT_TARGET_RADIUS * viewport_2d_in_3d.scale.x
 
 
 func set_xr_mode(p_index: XRMode) -> void:
@@ -83,6 +90,9 @@ func set_xr_mode(p_index: XRMode) -> void:
 		flat_portal.visible = false
 		cube_portal.visible = false
 		cube_depth.visible = false
+
+		left_function_pointer.target_radius = FUNCTION_POINTER_DEFAULT_TARGET_RADIUS
+		right_function_pointer.target_radius = FUNCTION_POINTER_DEFAULT_TARGET_RADIUS
 
 		if uses_spatial_container:
 			OpenXRSpatialContainerExtension.request_spatial_container_bounds_mode(OpenXRSpatialContainerState.BOUNDS_MODE_IMMERSIVE)
@@ -132,6 +142,7 @@ func _on_spatial_container_bounds_changed(_spatial_container_rid: RID, p_infinit
 		print("Spatial Container: Immersive")
 		game_parent.position = Vector3.ZERO
 		game_parent.scale = Vector3.ONE
+		viewport_2d_in_3d.transform = viewport_2d_in_3d_transform_orig
 	else:
 		print("Spatial Container: Bounded")
 		var new_bounds: Vector3 = p_updated_bounds if not p_infinite_bounds else Vector3(1.0, 1.0, 1.0)
